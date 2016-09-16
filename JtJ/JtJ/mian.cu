@@ -44,13 +44,13 @@ int main( void )
 	float j[N], jtj[M];
 	float *dev_j,  *dev_jtj;
 
-	//åˆ†é…GPUæ˜¾å­˜
+	//·ÖÅäGPUÏÔ´æ
 	HANDLE_ERROR( cudaMalloc( (void**)&dev_j, N * sizeof(float) ) );
 	HANDLE_ERROR( cudaMalloc( (void**)&dev_jtj, N * sizeof(float) ) );
 
 
 
-	//è¯»å–é›…å¯æ¯”çŸ©é˜µ
+	//¶ÁÈ¡ÑÅ¿É±È¾ØÕó
 	const char *rpc1Filename = "D:\\in.txt";
 	FILE* fid21 = fopen(rpc1Filename, "rt");
 	for (int i = 0; i < N; i++)
@@ -59,19 +59,19 @@ int main( void )
 	}
 
 
-	// é›…å¯æ¯”çŸ©é˜µæ‹·è´åˆ°GPU
+	// ÑÅ¿É±È¾ØÕó¿½±´µ½GPU
 	HANDLE_ERROR( cudaMemcpy( dev_jtj, jtj, M * sizeof(float),
 		cudaMemcpyHostToDevice ) );
 	HANDLE_ERROR( cudaMemcpy( dev_j, j, N * sizeof(float),
 		cudaMemcpyHostToDevice ) );
 
-	//æ ¸å‡½æ•°
+	//ºËº¯Êı
 	dim3 grid(2), block(threadsPerBlock);
 	jtj_each_cam<<<grid, block>>>(
 		dev_j, dev_jtj,N);
 
 
-	//ä»CPUæ‹·è´å›GPU
+	//´ÓCPU¿½±´»ØGPU
 	HANDLE_ERROR( cudaMemcpy( jtj, dev_jtj, M * sizeof(float),cudaMemcpyDeviceToHost ) );
 	HANDLE_ERROR( cudaMemcpy( j, dev_j, N * sizeof(float),cudaMemcpyDeviceToHost ) );
 
