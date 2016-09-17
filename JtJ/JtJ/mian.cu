@@ -6,7 +6,7 @@
 #define threadsPerBlock   64
 
 
-__global__ void jtj_each_cam( float * J,	float* blocks ,int nJEC)
+__global__ void jtj_each_cam( int * J,	int* blocks ,int nJEC)
 {
 	__shared__ float value[threadsPerBlock * 8]; 
 	int index=threadIdx.x + blockIdx.x * blockDim.x;
@@ -41,12 +41,12 @@ __global__ void jtj_each_cam( float * J,	float* blocks ,int nJEC)
 
 int main( void ) 
 {
-	float j[N], jtj[M];
-	float *dev_j,  *dev_jtj;
+	int j[N], jtj[M];
+	int *dev_j,  *dev_jtj;
 
 	//∑÷≈‰GPUœ‘¥Ê
-	HANDLE_ERROR( cudaMalloc( (void**)&dev_j, N * sizeof(float) ) );
-	HANDLE_ERROR( cudaMalloc( (void**)&dev_jtj, N * sizeof(float) ) );
+	HANDLE_ERROR( cudaMalloc( (void**)&dev_j, N * sizeof(int) ) );
+	HANDLE_ERROR( cudaMalloc( (void**)&dev_jtj, N * sizeof(int) ) );
 
 
 
@@ -55,14 +55,14 @@ int main( void )
 	FILE* fid21 = fopen(rpc1Filename, "rt");
 	for (int i = 0; i < N; i++)
 	{
-		fscanf(fid21, "%f ", &j[i]);
+		fscanf(fid21, "%d ", &j[i]);
 	}
 
 
 	// —≈ø…±»æÿ’ÛøΩ±¥µΩGPU
-	HANDLE_ERROR( cudaMemcpy( dev_jtj, jtj, M * sizeof(float),
+	HANDLE_ERROR( cudaMemcpy( dev_jtj, jtj, M * sizeof(int),
 		cudaMemcpyHostToDevice ) );
-	HANDLE_ERROR( cudaMemcpy( dev_j, j, N * sizeof(float),
+	HANDLE_ERROR( cudaMemcpy( dev_j, j, N * sizeof(int),
 		cudaMemcpyHostToDevice ) );
 
 	//∫À∫Ø ˝
@@ -72,8 +72,8 @@ int main( void )
 
 
 	//¥”CPUøΩ±¥ªÿGPU
-	HANDLE_ERROR( cudaMemcpy( jtj, dev_jtj, M * sizeof(float),cudaMemcpyDeviceToHost ) );
-	HANDLE_ERROR( cudaMemcpy( j, dev_j, N * sizeof(float),cudaMemcpyDeviceToHost ) );
+	HANDLE_ERROR( cudaMemcpy( jtj, dev_jtj, M * sizeof(int),cudaMemcpyDeviceToHost ) );
+	HANDLE_ERROR( cudaMemcpy( j, dev_j, N * sizeof(int),cudaMemcpyDeviceToHost ) );
 
 	// display the results
 	for (int i=0; i<M; i++) 
