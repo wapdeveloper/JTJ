@@ -6,8 +6,8 @@ __global__ void jtx_cam(int* result, int* cameraID, int *cameraCount)
 	//分配共享内存
 	__shared__ int value[txPerBlock * 8]; 
 	//取出Jc矩阵元素以及对应的向量
-	float4 x1 = tex1Dfetch(tex_x_cam, 0);
-	float4 x2 = tex1Dfetch(tex_x_cam, 1);	
+	float4 x1 = tex1Dfetch(tex_x_cam, 2 * blockIdx.x);
+	float4 x2 = tex1Dfetch(tex_x_cam, 2 * blockIdx.x + 1);	
 	int count = 0;
 	int tid = threadIdx.x + (cameraID[blockIdx.x] >> 2);
 	while (tid < cameraCount[blockIdx.x]>>2) 
